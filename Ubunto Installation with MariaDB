@@ -1,0 +1,57 @@
+#APT 
+apt update
+apt install -y apache2 mariadb-client mariadb-server cpanminus
+
+#Download Znuny 
+cd /opt
+wget https://download.znuny.org/releases/znuny-latest-6.5.tar.gz
+tar xfz znuny-latest-6.5.tar.gz
+useradd -d /opt/otrs -c 'Znuny user' -g www-data -s /bin/bash -M -N otrs 
+cp /opt/otrs/Kernel/Config.pm.dist /opt/otrs/Kernel/Config.pm
+
+#PERMISSIONS 
+/opt/otrs/bin/otrs.SetPermissions.pl
+
+#OTRS USER 
+su - otrs
+cd /opt/otrs/var/cron
+for foo in *.dist; do cp $foo `basename $foo .dist`; done
+
+#PERL REQUIRED 
+apt -y install apache2 mariadb-client mariadb-server cpanminus libapache2-mod-perl2 libdbd-mysql-perl libtimedate-perl libnet-dns-perl libnet-ldap-perl libio-socket-ssl-perl libpdf-api2-perl libsoap-lite-perl libtext-csv-xs-perl libjson-xs-perl libapache-dbi-perl libxml-libxml-perl libxml-libxslt-perl libyaml-perl libarchive-zip-perl libcrypt-eksblowfish-perl libencode-hanextra-perl libmail-imapclient-perl libtemplate-perl libdatetime-perl libmoo-perl bash-completion libyaml-libyaml-perl libjavascript-minifier-xs-perl libcss-minifier-xs-perl libauthen-sasl-perl libauthen-ntlm-perl libhash-merge-perl libical-parser-perl libspreadsheet-xlsx-perl libcrypt-jwt-perl libcrypt-openssl-x509-perl jq
+
+cpanm install Jq
+systemctl enable mariadb apache2
+#DATABASE CONFIG 
+/etc/mysql/mariadb.conf.d/50-znuny_config.cnf
+
+[mysql]
+max_allowed_packet=256M
+[mysqldump]
+max_allowed_packet=256M
+
+[mysqld]
+innodb_file_per_table
+innodb_log_file_size = 256M
+max_allowed_packet=256M
+character-set-server  = utf8
+collation-server      = utf8_general_ci
+
+systemctl restart mariadb
+
+#WebServer 
+ln -s /opt/otrs/scripts/apache2-httpd.include.conf /etc/apache2/conf-available/zzz_znuny.conf
+a2enmod perl headers deflate filter cgi
+a2dismod mpm_event
+a2enmod mpm_prefork
+a2enconf zzz_znuny
+
+systemctl restart apache2
+
+systemctl enable mariadb apache2
+
+#CRON 
+su - otrs
+bin/Cron.sh start
+
+
