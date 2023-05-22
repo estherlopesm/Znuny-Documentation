@@ -54,4 +54,12 @@ systemctl enable mariadb apache2
 su - otrs
 bin/Cron.sh start
 
+#OTRS 
+systemctl enable mariadb
+mysql -u root -p 
+CREATE DATABASE otrs CHARACTER SET utf8 COLLATE utf8_bin;
+
+
+
+
 
