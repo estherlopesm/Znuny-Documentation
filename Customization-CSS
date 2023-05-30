@@ -1,0 +1,19 @@
+/opt/otrs/var/httpd/htdocs/logins/login1/css/styles 
+vim styles.css
+
+body { 
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient( 
+      rgba(0, 0, 0 ,0.3),
+      rgba(0, 0, 0, 0.7)
+), 
+
+url("") no-repeat;
+front-family: 'Source Sans Pro', sans-serif;
+background-position: center; 
+background-size: cover; 
+
+} 
+      
+      
