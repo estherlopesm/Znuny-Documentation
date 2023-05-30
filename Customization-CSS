@@ -15,5 +15,19 @@ background-position: center;
 background-size: cover; 
 
 } 
-      
+
+
+#ADD LOGO 
+opt/otrs/var/httpd/htdocs/skins/Agent/default/img/icons/
+wget 
+
+mv product.ico product.ico.bkp
+mv marca-09.png product.ico
+
+#Set Permissions 
+/opt/otrs/bin/otrs.SetPermissions.pl 
+service apache2 restart
+service apache2 reload
+ 
+
       
